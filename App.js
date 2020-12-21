@@ -13,11 +13,11 @@ class App extends Component {
   }
 
   isOps = false;
-  isEqual = true;
   isDot = false;
   isDivide = true;
   isZero = true;
   isWrongOps = false;
+  isNumber = true;
 
   clearAll = () => {
     this.setState({
@@ -28,13 +28,11 @@ class App extends Component {
     this.isOps = false;
     this.isDot = false;
     this.isWrongOps = false;
-    // this.isDivide = true;
-    //   this.isZero = true;
-
+    this.isNumber = true;
   }
 
   backBtn = () => {
-    opsDisp = this.state.operations;
+    opsDisp = this.state.operations ;
     
     this.setState({
       operations: opsDisp.substring(0, opsDisp.length - 1)
@@ -45,38 +43,47 @@ class App extends Component {
     opsDisp = this.state.operations ;
     resDisp = this.state.result;
     
-    if (text == '0') { console.log('zero')
+    if (text == '0') {
       this.setState({operations: opsDisp + text}) ;
       this.isZero = false;
+      this.isDot = true;
     }else if (this.isWrongOps || opsDisp == "0" || opsDisp == ".") { 
-      this.setState({operations: text});
+      this.setState({
+        operations: text,
+        result: ""
+      });
       this.isOps = true;
       this.isDot = true;
+      this.isDivide = false;
       this.isWrongOps = false;
-    } else if (text != '0') { console.log('ops')
+    } else if (text != '0') { 
       this.setState({operations: opsDisp + text}) ;
       this.isOps = true;
       this.isDot = true;
+      this.isDivide = false;
     }
   } 
 
   getOps = (ops) => {
     opsDisp = this.state.operations;
 
-    if (ops === '/') {
+    if (!this.isDivide && ops === '/') {
       this.setState({operations: opsDisp + ops});
-      this.isDivide = false;
-
+      this.isDivide = true;
+      this.isOps = false;
+      this.isDot = false;
+      this.isNumber = true;
     }else if (this.isOps && ops != '.' && ops != '/') {
       this.setState({operations: opsDisp + ops});
       this.isOps = false;
       this.isDot = false;
-
-    } else if (this.isDot && ops !== '/') {
+      this.isNumber = true;
+    } else if (this.isDot && this.isNumber) {
       this.setState({operations: opsDisp + ops});
       this.isOps = false;
       this.isDot = false;
-
+      this.isZero = true;
+      this.isNumber = false;
     }
   }
 
@@ -84,7 +91,7 @@ class App extends Component {
     opsDisp = this.state.operations;
     resDisp = this.state.result;
 
-    if(opsDisp == "") {
+    if(opsDisp == "" || this.isWrongOps) {
       this.clearAll;
     } else if (!this.isOps || !this.isDot) {
       this.resDisp = eval(opsDisp.substring(0, opsDisp.length - 1));
@@ -105,6 +112,7 @@ class App extends Component {
         result: this.resDisp,
         operations: this.resDisp
       });
+      this.isNumber = false;
     }
   }
 
@@ -125,7 +133,7 @@ class App extends Component {
               <TouchableOpacity style={styles.clrBtnBack} onPress={this.clearAll}>
                 <Text style={styles.text}>CA</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.delBtnBack} onPress={this.backBtn}>
+              <TouchableOpacity style={styles.delBtnBack} onPress={() => this.backBtn()}>
                 <Text style={styles.text}>⌫</Text>
               </TouchableOpacity>
           </View>
