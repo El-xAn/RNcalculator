@@ -33,10 +33,49 @@ class App extends Component {
 
   backBtn = () => {
     opsDisp = this.state.operations ;
-    
-    this.setState({
-      operations: opsDisp.substring(0, opsDisp.length - 1)
-    })
+    resDisp = this.state.result;
+
+    lastSym = opsDisp[opsDisp.length-1];
+
+    if(opsDisp === "") {
+      console.log("if");
+      this.setState({
+        operations: this.state.operations = "" ,
+        result: this.state.result = ""
+      });
+    // } else if (opsDisp === resDisp) {
+    //   this.setState({
+    //     operations: opsDisp.substring(0, opsDisp.length - 1),
+    //     // result: opsDisp.substring(0, opsDisp.length - 1) 
+    //   });
+    } else {
+      switch(lastSym) {
+        case '.': 
+          this.isDot = true;
+          this.isOps = false;
+          this.isNumber = true;
+        case '+': 
+          this.isOps = false;
+          this.isDot = true;
+          this.isNumber = true;
+        case '-':
+          this.isOps = true;
+          this.isDot = false;
+          this.isNumber = false;
+        case '*':
+          this.isOps = true;
+          this.isDot = false;
+          this.isNumber = false;
+        case '/':
+          this.isOps = true;
+          this.isDot = false;
+          this.isNumber = false;
+      }
+
+      this.setState({
+        operations: opsDisp.substring(0, opsDisp.length - 1)
+      });
+    }    
   }
 
   getButton = (text) => {
@@ -78,12 +117,14 @@ class App extends Component {
       this.isOps = false;
       this.isDot = false;
       this.isNumber = true;
+      this.isDivide = true;
     } else if (this.isDot && this.isNumber) {
       this.setState({operations: opsDisp + ops});
       this.isOps = false;
       this.isDot = false;
       this.isZero = true;
       this.isNumber = false;
+      this.isDivide = true;
     }
   }
 
@@ -92,7 +133,10 @@ class App extends Component {
     resDisp = this.state.result;
 
     if(opsDisp == "" || this.isWrongOps) {
-      this.clearAll;
+      this.setState({
+        operations: this.state.operations = "" ,
+        result: this.state.result = ""
+      });
     } else if (!this.isOps || !this.isDot) {
       this.resDisp = eval(opsDisp.substring(0, opsDisp.length - 1));
       this.setState({
